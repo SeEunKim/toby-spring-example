@@ -2,10 +2,10 @@ package springbook.user.domain;
 
 import java.sql.*;
 
-public class UserDao {
+public abstract class UserDao {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao dao = new UserDao();
+        UserDao dao = new NUserDao();
 
         dao.init();
 
@@ -75,8 +75,5 @@ public class UserDao {
         return user;
     }
 
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("org.h2.Driver");
-        return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
-    }
+    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 }
