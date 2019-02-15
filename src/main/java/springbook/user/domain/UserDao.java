@@ -3,6 +3,11 @@ package springbook.user.domain;
 import java.sql.*;
 
 public abstract class UserDao {
+    private SimpleConnectionMaker simpleConnectionMaker;
+
+    public UserDao() {
+        simpleConnectionMaker = new SimpleConnectionMaker();
+    }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         UserDao dao = new NUserDao();
@@ -31,7 +36,7 @@ public abstract class UserDao {
 
     // h2 mem 이기 때문에 Init을 해줘야 한다.
     public void init() throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         String sql = "create table users (id varchar(10) primary key, name varchar(20) not null, password varchar(20) not null )";
         PreparedStatement ps = c.prepareStatement(sql);
@@ -42,7 +47,7 @@ public abstract class UserDao {
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
         ps.setString(1, user.getId());
@@ -56,7 +61,7 @@ public abstract class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
