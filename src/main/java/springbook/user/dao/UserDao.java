@@ -1,16 +1,18 @@
-package springbook.user.domain;
+package springbook.user.dao;
+
+import springbook.user.domain.User;
 
 import java.sql.*;
 
-public abstract class UserDao {
-    private SimpleConnectionMaker simpleConnectionMaker;
+public class UserDao {
+    private ConnectionMaker connectionMaker;
 
     public UserDao() {
-        simpleConnectionMaker = new SimpleConnectionMaker();
+        connectionMaker = new DConnectionMaker();
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao dao = new NUserDao();
+        UserDao dao = new UserDao();
 
         dao.init();
 
@@ -36,7 +38,7 @@ public abstract class UserDao {
 
     // h2 mem 이기 때문에 Init을 해줘야 한다.
     public void init() throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        Connection c = connectionMaker.makeConnection();
 
         String sql = "create table users (id varchar(10) primary key, name varchar(20) not null, password varchar(20) not null )";
         PreparedStatement ps = c.prepareStatement(sql);
@@ -47,7 +49,7 @@ public abstract class UserDao {
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
         ps.setString(1, user.getId());
@@ -61,7 +63,7 @@ public abstract class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
@@ -79,6 +81,4 @@ public abstract class UserDao {
 
         return user;
     }
-
-    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 }
