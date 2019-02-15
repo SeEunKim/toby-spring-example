@@ -23,16 +23,15 @@ public class UserDao {
         System.out.println(user2.getPassword());
 
         System.out.println(user2.getId() + "조회 성공");
-    }
+   }
 
 
 
 
 
-
+    // h2 mem 이기 때문에 Init을 해줘야 한다.
     public void init() throws ClassNotFoundException, SQLException {
-        Class.forName("org.h2.Driver");
-        Connection c = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+        Connection c = getConnection();
 
         String sql = "create table users (id varchar(10) primary key, name varchar(20) not null, password varchar(20) not null )";
         PreparedStatement ps = c.prepareStatement(sql);
@@ -43,8 +42,7 @@ public class UserDao {
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Class.forName("org.h2.Driver");
-        Connection c = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+        Connection c = getConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
         ps.setString(1, user.getId());
@@ -58,8 +56,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Class.forName("org.h2.Driver");
-        Connection c = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+        Connection c = getConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
@@ -76,6 +73,10 @@ public class UserDao {
         c.close();
 
         return user;
+    }
 
+    private Connection getConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("org.h2.Driver");
+        return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
     }
 }
